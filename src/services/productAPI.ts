@@ -1,7 +1,7 @@
 
 export const fetchAllProducts = async () => {
     try {
-        const response = await fetch('http://192.168.1.219:8080/api/v1/products');
+        const response = await fetch('http://192.168.1.10:8080/api/v1/products');
         if (!response.ok) {
             throw new Error('Network response was not ok ' + response.statusText);
         }

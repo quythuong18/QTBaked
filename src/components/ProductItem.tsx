@@ -1,6 +1,6 @@
-import { StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Image} from 'expo-image'
-import {Card} from 'react-native-paper'
+import {Text} from 'react-native-paper'
 
 interface ProductItemProps {
     name: string;
