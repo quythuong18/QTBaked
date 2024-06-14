@@ -1,15 +1,20 @@
 import { FlatList, SafeAreaView, StyleSheet, View } from 'react-native';
 import ProductItem from '../components/ProductItem';
-import {ActivityIndicator, Button, Text} from 'react-native-paper'
+import CategoryItem from '../components/CategoryItem';
+import {ActivityIndicator, Appbar, Button, Text} from 'react-native-paper'
 import { useCallback, useEffect, useState } from 'react';
 import {fetchAllProducts} from '../services/productAPI'
 import {ScrollView } from'react-native-virtualized-view'
+import { fetchAllCategories } from '../services/categoryAPI';
+import { Image } from 'expo-image';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const renderProducts = useCallback(({item}) => (<ProductItem  name={item.name} price={item.price} imgPath={item.imgPath}/>), [])
+  const renderCategories = useCallback(({item}) => (<CategoryItem  name={item.name} />), [])
   useEffect(() => {
     const getAllProducts = async() => {
       try {
@@ -21,17 +26,34 @@ export default function Home() {
         setIsLoading(false);
       }
     }
-    getAllProducts();
-  }, []);
+
+    const getCategories = async() => {
+      try {
+        const categoriesData = await fetchAllCategories();
+        setCategories(categoriesData);
+        console.log(categoriesData);
+        console.log(categoriesData);
+      } catch(error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    }
+      getCategories();
+      getAllProducts();
+   }, []);
   
   return (
-    <ScrollView style={{}}>
-        <View style={styles.search}><Text variant="headlineMedium">Search</Text></View>
-        <View style={styles.slider}><Text variant="headlineMedium">Slider</Text></View>
-        <View style={styles.category}><Text variant="headlineMedium">Category</Text></View>
-        <ScrollView>
-        
-        </ScrollView>
+    <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.slider}>
+        <Image source={"https://wallpaperboat.com/wp-content/uploads/2020/02/bakery-12.jpg"} transition={300} style={{height:'100%', width: '100%'}}></Image>
+        </View>
+        <FlatList 
+          style={styles.category}
+          horizontal={true}
+          data={categories}
+          renderItem={renderCategories}
+          keyExtractor={item => item.id}
+          showsHorizontalScrollIndicator={false}
+        />
         {
           isLoading? (
               <ActivityIndicator style={{paddingTop: 20}} size='large' />
@@ -43,7 +65,7 @@ export default function Home() {
                 horizontal={false}
                 renderItem={renderProducts}
                 keyExtractor={item => item.id}
-                columnWrapperStyle={styles.columnWrapper}
+                columnWrapperStyle={styles.productColumnWrapper}
               />
           )
         }
@@ -54,17 +76,22 @@ export default function Home() {
 const styles = StyleSheet.create({
   slider: {
     height: 128,
-    backgroundColor: 'green'
   },
   search: {
     height: 64,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    marginTop: 12,
+    marginHorizontal: 8
   },
   category: {
     height: 64,
-    backgroundColor: 'purple'
+    paddingTop: 12
   },
-  columnWrapper: {
+  categoryColumnWrapper: {
+    justifyContent: 'space-evenly',
+    paddingVertical: 16
+  },
+  productColumnWrapper: {
     justifyContent: 'space-evenly',
     paddingVertical: 16
   },
